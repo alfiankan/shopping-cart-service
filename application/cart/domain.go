@@ -1,6 +1,10 @@
 package cart
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type ItemFilter struct {
 	Name string
@@ -8,8 +12,9 @@ type ItemFilter struct {
 }
 
 type Cart struct {
-	ID    uuid.UUID
-	Items []CartItem
+	ID        uuid.UUID
+	CreatedAt time.Time
+	Items     []CartItem
 }
 
 type CartItem struct {
