@@ -22,7 +22,7 @@ func (repo *CartRepositoryPostgree) GetCarts(ctx context.Context) (carts []cart.
 func (repo *CartRepositoryPostgree) GetItems(ctx context.Context, filter cart.ItemFilter) (carts []cart.Cart, err error) {
 	return
 }
-func (repo *CartRepositoryPostgree) NewCart(ctx context.Context, cart cart.Cart) (err error) {
+func (repo *CartRepositoryPostgree) NewCart(ctx context.Context) (err error) {
 	return
 }
 func (repo *CartRepositoryPostgree) AddCartItem(ctx context.Context, item cart.CartItem) (err error) {
