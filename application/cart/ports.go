@@ -19,10 +19,10 @@ type ICartUseCase interface {
 // ICartRepository persistence db storage store cart
 type ICartRepository interface {
 	GetCarts(ctx context.Context) (carts []Cart, err error)
-	GetItems(ctx context.Context, filter ItemFilter) (carts []Cart, err error)
+	GetItems(ctx context.Context, cartID uuid.UUID, filter ItemFilter) (carts Cart, err error)
 
 	NewCart(ctx context.Context) (err error)
-	AddCartItem(ctx context.Context, item CartItem) (err error)
+	AddCartItem(ctx context.Context, cartID uuid.UUID, item CartItem) (err error)
 	DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode uuid.UUID) (err error)
 }
 

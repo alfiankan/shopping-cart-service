@@ -1,6 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS cart_item (
-    product_code uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4(),
+    product_code uuid,
     product_name TEXT NOT NULL,
     qty INT NOT NULL DEFAULT 1,
     cart_id uuid NOT NULL,

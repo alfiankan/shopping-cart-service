@@ -4,9 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/alfiankan/haioo-shoping-cart/application/cart"
 	"github.com/alfiankan/haioo-shoping-cart/application/cart/repositories"
 	"github.com/alfiankan/haioo-shoping-cart/config"
 	"github.com/alfiankan/haioo-shoping-cart/infrastructure"
+	"github.com/google/uuid"
+	"github.com/jaswdr/faker"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,23 +40,56 @@ func TestNewCart(t *testing.T) {
 
 	})
 
-	t.Run("get cart", func(t *testing.T) {
-		t.Error(nil)
+	var currentCartID string
+
+	t.Run("get carts", func(t *testing.T) {
+
+		carts, err := repo.GetCarts(ctx)
+
+		assert.NoError(t, err)
+
+		currentCartID = carts[0].ID.String()
+		assert.True(t, len(carts) > 0)
 	})
+
+	cartId, err := uuid.ParseBytes([]byte(currentCartID))
+	if err != nil {
+		t.Error(err)
+	}
 
 	t.Run("add item to cart", func(t *testing.T) {
-		t.Error(nil)
 
+		for i := 0; i < 10; i++ {
+			fake := faker.New()
+			errExec := repo.AddCartItem(ctx, cartId, cart.CartItem{
+				ProductCode: uuid.New(),
+				ProductName: fake.App().Name(),
+				Quantity:    fake.IntBetween(1, 10),
+			})
+			assert.NoError(t, errExec)
+		}
 	})
+
+	var currentProductCode string
 
 	t.Run("get cart items must be more than 0", func(t *testing.T) {
-		t.Error(nil)
 
+		cartItems, err := repo.GetItems(ctx, cartId, cart.ItemFilter{})
+
+		assert.NoError(t, err)
+		currentProductCode = cartItems.Items[0].ProductCode.String()
+		assert.True(t, len(cartItems.Items) > 0)
 	})
 
-	t.Run("delete cart item", func(t *testing.T) {
-		t.Error(nil)
+	productCode, err := uuid.ParseBytes([]byte(currentProductCode))
+	if err != nil {
+		t.Error(err)
+	}
 
+	t.Run("delete cart item", func(t *testing.T) {
+
+		err := repo.DeleteCartItem(ctx, cartId, productCode)
+		assert.NoError(t, err)
 	})
 
 }

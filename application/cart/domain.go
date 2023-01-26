@@ -8,7 +8,7 @@ import (
 
 type ItemFilter struct {
 	Name string
-	Qty  string
+	Qty  int
 }
 
 type Cart struct {
@@ -18,6 +18,7 @@ type Cart struct {
 }
 
 type CartItem struct {
+	ItemID      uuid.UUID
 	ProductCode uuid.UUID
 	ProductName string
 	Quantity    int
