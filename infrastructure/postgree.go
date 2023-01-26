@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/alfiankan/go-cqrs-blog/config"
+	"github.com/alfiankan/haioo-shoping-cart/config"
 	_ "github.com/lib/pq"
 )
 

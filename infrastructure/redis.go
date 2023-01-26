@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 
-	"github.com/alfiankan/go-cqrs-blog/config"
+	"github.com/alfiankan/haioo-shoping-cart/config"
 	"github.com/go-redis/redis/v9"
 )
 
