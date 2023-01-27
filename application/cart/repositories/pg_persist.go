@@ -88,5 +88,9 @@ func (repo *CartRepositoryPostgree) AddCartItem(ctx context.Context, cartID uuid
 }
 
 func (repo *CartRepositoryPostgree) DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode uuid.UUID) (err error) {
+
+	sql := "DELETE FROM cart_item WHERE cart_id = $1 AND product_code = $2"
+	_, err = repo.db.ExecContext(ctx, sql, cartID, productCode)
+
 	return
 }
