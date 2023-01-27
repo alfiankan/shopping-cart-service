@@ -62,7 +62,7 @@ func TestNewCart(t *testing.T) {
 		for i := 0; i < 10; i++ {
 			fake := faker.New()
 			errExec := repo.AddCartItem(ctx, cartId, cart.CartItem{
-				ProductCode: uuid.New(),
+				ProductCode: uuid.New().String(),
 				ProductName: fake.App().Name(),
 				Quantity:    fake.IntBetween(1, 10),
 			})
@@ -77,18 +77,17 @@ func TestNewCart(t *testing.T) {
 		cartItems, err := repo.GetItems(ctx, cartId, cart.ItemFilter{})
 
 		assert.NoError(t, err)
-		currentProductCode = cartItems.Items[0].ProductCode.String()
+		currentProductCode = cartItems.Items[0].ProductCode
 		assert.True(t, len(cartItems.Items) > 0)
 	})
 
-	productCode, err := uuid.ParseBytes([]byte(currentProductCode))
 	if err != nil {
 		t.Error(err)
 	}
 
 	t.Run("delete cart item", func(t *testing.T) {
 
-		err := repo.DeleteCartItem(ctx, cartId, productCode)
+		err := repo.DeleteCartItem(ctx, cartId, currentProductCode)
 		assert.NoError(t, err)
 	})
 

@@ -29,7 +29,7 @@ func TestCartRepoCahche(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		fake := faker.New()
 		newCart.Items = append(newCart.Items, cart.CartItem{
-			ProductCode: uuid.New(),
+			ProductCode: uuid.New().String(),
 			ProductName: fake.App().Name(),
 			Quantity:    fake.IntBetween(1, 10),
 		})

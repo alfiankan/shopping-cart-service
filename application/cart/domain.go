@@ -19,7 +19,7 @@ type Cart struct {
 
 type CartItem struct {
 	ItemID      uuid.UUID
-	ProductCode uuid.UUID
+	ProductCode string
 	ProductName string
 	Quantity    int
 }

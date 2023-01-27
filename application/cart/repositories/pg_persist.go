@@ -16,9 +16,9 @@ func NewCartRepositoryPostgree(db *sql.DB) cart.ICartRepository {
 	return &CartRepositoryPostgree{db}
 }
 
-func (repo *CartRepositoryPostgree) GetItemByProductID(ctx context.Context, cartID, productCode uuid.UUID) (item cart.CartItem, err error) {
+func (repo *CartRepositoryPostgree) GetItemByProductID(ctx context.Context, cartID uuid.UUID, productCode string) (item cart.CartItem, err error) {
 
-	sql := "SELECT * FROM cart_item WHERE cart_id = $1 AND product_code = $2"
+	sql := "SELECT id, product_code, product_name, qty  FROM cart_item WHERE cart_id = $1 AND product_code = $2"
 	row := repo.db.QueryRowContext(ctx, sql, cartID, productCode)
 
 	if row.Err() != nil {
@@ -33,7 +33,7 @@ func (repo *CartRepositoryPostgree) GetItemByProductID(ctx context.Context, cart
 	return
 }
 
-func (repo *CartRepositoryPostgree) UpdateQtyByProductID(ctx context.Context, cartID, productCode uuid.UUID, qty int) (ok bool) {
+func (repo *CartRepositoryPostgree) UpdateQtyByProductID(ctx context.Context, cartID uuid.UUID, productCode string, qty int) (ok bool) {
 
 	sql := "UPDATE cart_item SET qty = $1 WHERE product_code = $2 AND cart_id = $3"
 
@@ -119,7 +119,7 @@ func (repo *CartRepositoryPostgree) AddCartItem(ctx context.Context, cartID uuid
 	return
 }
 
-func (repo *CartRepositoryPostgree) DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode uuid.UUID) (err error) {
+func (repo *CartRepositoryPostgree) DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode string) (err error) {
 
 	sql := "DELETE FROM cart_item WHERE cart_id = $1 AND product_code = $2"
 	_, err = repo.db.ExecContext(ctx, sql, cartID, productCode)

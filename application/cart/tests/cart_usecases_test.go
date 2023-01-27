@@ -49,7 +49,7 @@ func TestCartUseCases(t *testing.T) {
 			errExec := uc.AddToCart(ctx, cart.Cart{
 				ID: cartID,
 				Items: []cart.CartItem{{
-					ProductCode: uuid.New(),
+					ProductCode: uuid.New().String(),
 					ProductName: fake.App().Name(),
 					Quantity:    fake.IntBetween(1, 10),
 				}},
@@ -59,7 +59,7 @@ func TestCartUseCases(t *testing.T) {
 
 	})
 
-	var productCode uuid.UUID
+	var productCode string
 	t.Run("get cart items", func(t *testing.T) {
 
 		cart, err := uc.GetCartItems(ctx, cartID, cart.ItemFilter{})

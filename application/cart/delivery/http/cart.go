@@ -2,10 +2,12 @@ package http_delivery
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/alfiankan/haioo-shoping-cart/application/cart"
 	"github.com/alfiankan/haioo-shoping-cart/application/cart/transport"
 	"github.com/alfiankan/haioo-shoping-cart/common"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -76,7 +78,43 @@ func (handler *CartHttpApi) GetAllCarts(c echo.Context) error {
 // @Router /carts/{cart_id}/items [post]
 func (handler *CartHttpApi) AddProductToCart(c echo.Context) error {
 
-	return c.String(http.StatusOK, "ok")
+	cartID, err := uuid.Parse(c.Param("cart_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &transport.BaseResponse{
+			Message: common.BadRequestError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	var reqBody transport.ItemRequest
+	if err := c.Bind(&reqBody); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, &transport.BaseResponse{
+			Message: common.BadRequestError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	if err := handler.cartUseCase.AddToCart(c.Request().Context(), cart.Cart{
+		ID: cartID,
+		Items: []cart.CartItem{{
+			ProductCode: reqBody.ProductCode,
+			ProductName: reqBody.ProductName,
+			Quantity:    reqBody.Quantity,
+		}},
+	}); err != nil {
+		common.Log(common.LOG_LEVEL_ERROR, err.Error())
+
+		return c.JSON(http.StatusInternalServerError, &transport.BaseResponse{
+			Message: common.InternalServerError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	return c.JSON(http.StatusOK, &transport.BaseResponse{
+		Message: common.HttpSuccess,
+		Data:    common.EmptyResponseData,
+	})
+
 }
 
 // @Description delete item/produk from cart
@@ -101,7 +139,46 @@ func (handler *CartHttpApi) DeleteCartItem(c echo.Context) error {
 // @Success 200
 // @Router /carts/{cart_id}/items [get]
 func (handler *CartHttpApi) GetAllCartitems(c echo.Context) error {
-	return c.String(http.StatusOK, "ok")
+
+	cartID, err := uuid.Parse(c.Param("cart_id"))
+	filterProdukName := c.QueryParam("produkName")
+
+	kuantitasParamStr := "0"
+	if c.QueryParam("kuantitas") != "" {
+		kuantitasParamStr = c.QueryParam("kuantitas")
+	}
+
+	filterKuantitas, err := strconv.Atoi(kuantitasParamStr)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &transport.BaseResponse{
+			Message: common.BadRequestError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	cartRes, err := handler.cartUseCase.GetCartItems(
+		c.Request().Context(),
+		cartID,
+		cart.ItemFilter{Name: filterProdukName, Qty: filterKuantitas},
+	)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &transport.BaseResponse{
+			Message: common.InternalServerError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	if len(cartRes.Items) == 0 {
+		cartRes.Items = []cart.CartItem{}
+	}
+
+	return c.JSON(http.StatusOK, &transport.BaseResponse{
+		Message: common.HttpSuccess,
+		Data:    cartRes.Items,
+	})
+
 }
 
 func (handler *CartHttpApi) HandleRoute(e *echo.Echo) {
