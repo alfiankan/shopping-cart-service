@@ -33,4 +33,5 @@ type ICartCacheRepository interface {
 	Save(ctx context.Context, cart Cart, cacheKey string) (err error)
 	Get(ctx context.Context, cartID string) (cart Cart, err error)
 	InvalidateByCartID(ctx context.Context, cartID string) (err error)
+	InvalidateAll(ctx context.Context) (err error)
 }

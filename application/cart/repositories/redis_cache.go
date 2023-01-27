@@ -59,3 +59,12 @@ func (repo *CartRepositoryCacheRedis) InvalidateByCartID(ctx context.Context, ca
 
 	return
 }
+
+func (repo *CartRepositoryCacheRedis) InvalidateAll(ctx context.Context) (err error) {
+
+	if err = repo.cache.FlushAll(ctx).Err(); err != nil {
+		return
+	}
+
+	return
+}

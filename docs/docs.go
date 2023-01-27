@@ -57,39 +57,6 @@ const docTemplate = `{
                         "description": "OK"
                     }
                 }
-            },
-            "delete": {
-                "description": "delete item/produk from cart",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "cart"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "cart_id uuid",
-                        "name": "cart_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "kodeProduk uuid",
-                        "name": "product_code",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
             }
         },
         "/carts/{cart_id}/items": {
@@ -158,6 +125,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/transport.ItemRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/carts/{cart_id}/{product_code}": {
+            "delete": {
+                "description": "delete item/produk from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart_id uuid",
+                        "name": "cart_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "kodeProduk uuid",
+                        "name": "product_code",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

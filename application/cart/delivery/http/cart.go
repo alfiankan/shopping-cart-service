@@ -124,9 +124,31 @@ func (handler *CartHttpApi) AddProductToCart(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Success 200
-// @Router /carts [delete]
+// @Router /carts/{cart_id}/{product_code} [delete]
 func (handler *CartHttpApi) DeleteCartItem(c echo.Context) error {
-	return c.String(http.StatusOK, "ok")
+
+	cartID, err := uuid.Parse(c.Param("cart_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, &transport.BaseResponse{
+			Message: common.BadRequestError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	productCode := c.Param("product_code")
+
+	if err = handler.cartUseCase.DeleteCartItem(c.Request().Context(), cartID, productCode); err != nil {
+		return c.JSON(http.StatusInternalServerError, &transport.BaseResponse{
+			Message: common.InternalServerError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	return c.JSON(http.StatusOK, &transport.BaseResponse{
+		Message: common.HttpSuccess,
+		Data:    "Delete Success",
+	})
+
 }
 
 // @Description get all product/item from cart

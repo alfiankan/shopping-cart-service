@@ -80,6 +80,13 @@ func (uc *CartApplication) AddToCart(ctx context.Context, cart cart.Cart) (err e
 
 func (uc *CartApplication) DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode string) (err error) {
 
-	err = uc.persistRepo.DeleteCartItem(ctx, cartID, productCode)
+	if err = uc.persistRepo.DeleteCartItem(ctx, cartID, productCode); err != nil {
+		return
+	}
+
+	// invalidate cacheRepo
+
+	err = uc.cacheRepo.InvalidateAll(ctx)
+
 	return
 }

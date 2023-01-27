@@ -21,28 +21,6 @@ info:
   version: "1.0"
 paths:
   /carts:
-    delete:
-      consumes:
-      - application/json
-      description: delete item/produk from cart
-      parameters:
-      - description: cart_id uuid
-        in: path
-        name: cart_id
-        required: true
-        type: string
-      - description: kodeProduk uuid
-        in: path
-        name: product_code
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      tags:
-      - cart
     get:
       consumes:
       - application/json
@@ -58,6 +36,29 @@ paths:
       consumes:
       - application/json
       description: create new cart/bucket
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+  /carts/{cart_id}/{product_code}:
+    delete:
+      consumes:
+      - application/json
+      description: delete item/produk from cart
+      parameters:
+      - description: cart_id uuid
+        in: path
+        name: cart_id
+        required: true
+        type: string
+      - description: kodeProduk uuid
+        in: path
+        name: product_code
+        required: true
+        type: string
       produces:
       - application/json
       responses:
