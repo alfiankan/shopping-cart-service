@@ -16,6 +16,38 @@ func NewCartRepositoryPostgree(db *sql.DB) cart.ICartRepository {
 	return &CartRepositoryPostgree{db}
 }
 
+func (repo *CartRepositoryPostgree) GetItemByProductID(ctx context.Context, cartID, productCode uuid.UUID) (item cart.CartItem, err error) {
+
+	sql := "SELECT * FROM cart_item WHERE cart_id = $1 AND product_code = $2"
+	row := repo.db.QueryRowContext(ctx, sql, cartID, productCode)
+
+	if row.Err() != nil {
+		err = row.Err()
+		return
+	}
+
+	if err = row.Scan(&item.ItemID, &item.ProductCode, &item.ProductName, &item.Quantity); err != nil {
+		return
+	}
+
+	return
+}
+
+func (repo *CartRepositoryPostgree) UpdateQtyByProductID(ctx context.Context, cartID, productCode uuid.UUID, qty int) (ok bool) {
+
+	sql := "UPDATE cart_item SET qty = $1 WHERE product_code = $2 AND cart_id = $3"
+
+	_, err := repo.db.ExecContext(ctx, sql, qty, productCode, cartID)
+
+	if err != nil {
+		ok = false
+		return
+	}
+	ok = true
+
+	return
+}
+
 func (repo *CartRepositoryPostgree) GetCarts(ctx context.Context) (carts []cart.Cart, err error) {
 
 	sql := "SELECT id, created_at FROM cart"
