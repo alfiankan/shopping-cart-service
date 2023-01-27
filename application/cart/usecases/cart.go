@@ -13,7 +13,7 @@ type CartApplication struct {
 	cacheRepo   cart.ICartCacheRepository
 }
 
-func NewCartApplicationI(persistRepo cart.ICartRepository, cacheRepo cart.ICartCacheRepository) cart.ICartUseCase {
+func NewCartApplication(persistRepo cart.ICartRepository, cacheRepo cart.ICartCacheRepository) cart.ICartUseCase {
 	return &CartApplication{persistRepo, cacheRepo}
 }
 

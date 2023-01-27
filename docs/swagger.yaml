@@ -1,0 +1,117 @@
+basePath: /
+definitions:
+  transport.ItemRequest:
+    properties:
+      kodeProduk:
+        type: string
+      kuantitas:
+        type: integer
+      namaProduk:
+        type: string
+    type: object
+info:
+  contact:
+    email: alfiankan19@gmail.com
+    name: alfiankan
+    url: https://github.com/alfiankan
+  description: Go implemented api.
+  license:
+    name: Apache 2.0
+  title: haioo-shopping-cart-api
+  version: "1.0"
+paths:
+  /carts:
+    delete:
+      consumes:
+      - application/json
+      description: delete item/produk from cart
+      parameters:
+      - description: cart_id uuid
+        in: path
+        name: cart_id
+        required: true
+        type: string
+      - description: kodeProduk uuid
+        in: path
+        name: product_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+    get:
+      consumes:
+      - application/json
+      description: get carts bucket
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+    post:
+      consumes:
+      - application/json
+      description: create new cart/bucket
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+  /carts/{cart_id}/items:
+    get:
+      consumes:
+      - application/json
+      description: get all product/item from cart
+      parameters:
+      - description: cart_id uuid
+        in: path
+        name: cart_id
+        required: true
+        type: string
+      - description: filter by nama produk
+        in: query
+        name: namaProduk
+        type: string
+      - description: filter by kuantitas
+        in: query
+        name: juantitas
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+    post:
+      consumes:
+      - application/json
+      description: Add product to cart
+      parameters:
+      - description: cart_id uuid
+        in: path
+        name: cart_id
+        required: true
+        type: string
+      - description: Article detail
+        in: body
+        name: article
+        required: true
+        schema:
+          $ref: '#/definitions/transport.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      tags:
+      - cart
+swagger: "2.0"

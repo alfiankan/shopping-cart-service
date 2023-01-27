@@ -50,10 +50,10 @@ func TestMain(m *testing.M) {
 
 	// POSTGREESQL SETUP
 	postgreePorts := []docker.PortBinding{{HostPort: strconv.Itoa(cfg.PostgreePort)}}
-	pool.RemoveContainerByName("go-cqrs-postgree-test")
+	pool.RemoveContainerByName("haioo-cart-postgree-test")
 
 	if _, err = pool.RunWithOptions(&dockertest.RunOptions{
-		Name:         "go-cqrs-postgree-test",
+		Name:         "haioo-cart-postgree-test",
 		Repository:   "postgres",
 		Tag:          "14.1-alpine",
 		PortBindings: map[docker.Port][]docker.PortBinding{"5432/tcp": postgreePorts},
@@ -68,10 +68,10 @@ func TestMain(m *testing.M) {
 	// REDIS SETUP
 	parsedEnv := strings.Split(cfg.RedisHost[0], ":")
 	redisPorts := []docker.PortBinding{{HostPort: parsedEnv[len(parsedEnv)-1]}}
-	pool.RemoveContainerByName("go-cqrs-redis-test")
+	pool.RemoveContainerByName("haioo-cart-redis-test")
 
 	if _, err = pool.RunWithOptions(&dockertest.RunOptions{
-		Name:         "go-cqrs-redis-test",
+		Name:         "haioo-cart-redis-test",
 		Repository:   "redis",
 		Tag:          "6.2-alpine",
 		PortBindings: map[docker.Port][]docker.PortBinding{"6379/tcp": redisPorts},
@@ -107,9 +107,9 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
-	pool.RemoveContainerByName("go-cqrs-redis-test")
-	pool.RemoveContainerByName("go-cqrs-elasticsearch-test")
-	pool.RemoveContainerByName("go-cqrs-postgree-test")
+	pool.RemoveContainerByName("haioo-cart-redis-test")
+	pool.RemoveContainerByName("haioo-cart-elasticsearch-test")
+	pool.RemoveContainerByName("haioo-cart-postgree-test")
 	os.Exit(code)
 
 }

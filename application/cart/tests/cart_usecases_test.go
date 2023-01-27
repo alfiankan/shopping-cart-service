@@ -25,7 +25,7 @@ func TestCartUseCases(t *testing.T) {
 	persistRepo := repositories.NewCartRepositoryPostgree(pgConn)
 	cacheRepo := repositories.NewCartRepositoryCacheRedis(redisConn, 5*time.Minute)
 
-	uc := usecases.NewCartApplicationI(persistRepo, cacheRepo)
+	uc := usecases.NewCartApplication(persistRepo, cacheRepo)
 	ctx := context.Background()
 
 	t.Run("create cart", func(t *testing.T) {

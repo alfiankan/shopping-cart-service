@@ -1,0 +1,179 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Go implemented api.",
+        "title": "haioo-shopping-cart-api",
+        "contact": {
+            "name": "alfiankan",
+            "url": "https://github.com/alfiankan",
+            "email": "alfiankan19@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/carts": {
+            "get": {
+                "description": "get carts bucket",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "create new cart/bucket",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete item/produk from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart_id uuid",
+                        "name": "cart_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "kodeProduk uuid",
+                        "name": "product_code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/carts/{cart_id}/items": {
+            "get": {
+                "description": "get all product/item from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart_id uuid",
+                        "name": "cart_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter by nama produk",
+                        "name": "namaProduk",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "filter by kuantitas",
+                        "name": "juantitas",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "description": "Add product to cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "cart_id uuid",
+                        "name": "cart_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Article detail",
+                        "name": "article",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transport.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "transport.ItemRequest": {
+            "type": "object",
+            "properties": {
+                "kodeProduk": {
+                    "type": "string"
+                },
+                "kuantitas": {
+                    "type": "integer"
+                },
+                "namaProduk": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
