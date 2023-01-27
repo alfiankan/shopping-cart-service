@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/alfiankan/haioo-shoping-cart/application/cart"
+	"github.com/alfiankan/haioo-shoping-cart/application/cart/transport"
+	"github.com/alfiankan/haioo-shoping-cart/common"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,7 +24,19 @@ func NewCartHttpApi(cartUseCase cart.ICartUseCase) *CartHttpApi {
 // @Success 200
 // @Router /carts [post]
 func (handler *CartHttpApi) NewCart(c echo.Context) error {
-	return c.String(http.StatusOK, "ok")
+
+	err := handler.cartUseCase.CreateCart(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &transport.BaseResponse{
+			Message: common.InternalServerError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+	return c.JSON(http.StatusOK, &transport.BaseResponse{
+		Message: common.HttpSuccessCreated,
+		Data:    common.EmptyResponseData,
+	})
+
 }
 
 // @Description get carts bucket
@@ -33,7 +47,23 @@ func (handler *CartHttpApi) NewCart(c echo.Context) error {
 // @Router /carts [get]
 func (handler *CartHttpApi) GetAllCarts(c echo.Context) error {
 
-	return c.String(http.StatusOK, "ok")
+	var carts []cart.Cart
+	carts, err := handler.cartUseCase.GetCarts(c.Request().Context())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, &transport.BaseResponse{
+			Message: common.InternalServerError.Error(),
+			Data:    common.EmptyResponseData,
+		})
+	}
+
+	if len(carts) == 0 {
+		carts = []cart.Cart{}
+	}
+
+	return c.JSON(http.StatusOK, &transport.BaseResponse{
+		Message: common.HttpSuccess,
+		Data:    carts,
+	})
 }
 
 // @Description Add product to cart
