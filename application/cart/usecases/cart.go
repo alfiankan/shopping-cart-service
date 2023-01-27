@@ -59,7 +59,6 @@ func (uc *CartApplication) AddToCart(ctx context.Context, cart cart.Cart) (err e
 	if len(cart.Items) > 0 {
 
 		lastItem, errExist := uc.persistRepo.GetItemByProductID(ctx, cart.ID, cart.Items[0].ProductCode)
-		fmt.Println("EXIST", err)
 		if errExist != nil {
 			if err = uc.persistRepo.AddCartItem(ctx, cart.ID, cart.Items[0]); err != nil {
 				return

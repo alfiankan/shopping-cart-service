@@ -88,8 +88,6 @@ func (repo *CartRepositoryPostgree) GetItems(ctx context.Context, cartID uuid.UU
 		sql += fmt.Sprintf(" qty = %d ", filter.Qty)
 	}
 
-	fmt.Println("QUERY", sql)
-
 	row, err := repo.db.QueryContext(ctx, sql)
 
 	if err != nil {
@@ -131,7 +129,6 @@ func (repo *CartRepositoryPostgree) AddCartItem(ctx context.Context, cartID uuid
 
 func (repo *CartRepositoryPostgree) DeleteCartItem(ctx context.Context, cartID uuid.UUID, productCode string) (err error) {
 	sql := "DELETE FROM cart_item WHERE cart_id = $1 AND product_code = $2"
-	fmt.Println(sql, cartID.String(), productCode)
 	_, err = repo.db.ExecContext(ctx, sql, cartID, productCode)
 
 	return
