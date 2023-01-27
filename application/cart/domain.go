@@ -14,7 +14,7 @@ type ItemFilter struct {
 type Cart struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
-	Items     []CartItem
+	Items     []CartItem `json:"items,omitempty"`
 }
 
 type CartItem struct {

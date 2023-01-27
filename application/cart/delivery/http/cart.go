@@ -133,7 +133,7 @@ func (handler *CartHttpApi) DeleteCartItem(c echo.Context) error {
 // @Tags cart
 // @Param cart_id path string true "cart_id uuid"
 // @Param namaProduk query string false "filter by nama produk"
-// @Param juantitas query int false "filter by kuantitas"
+// @Param kuantitas query int false "filter by kuantitas"
 // @Accept json
 // @Produce json
 // @Success 200
@@ -141,7 +141,7 @@ func (handler *CartHttpApi) DeleteCartItem(c echo.Context) error {
 func (handler *CartHttpApi) GetAllCartitems(c echo.Context) error {
 
 	cartID, err := uuid.Parse(c.Param("cart_id"))
-	filterProdukName := c.QueryParam("produkName")
+	filterProdukName := c.QueryParam("namaProduk")
 
 	kuantitasParamStr := "0"
 	if c.QueryParam("kuantitas") != "" {

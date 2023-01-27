@@ -18,12 +18,12 @@ func NewCartRepositoryCacheRedis(cache redis.UniversalClient, ttl time.Duration)
 	return &CartRepositoryCacheRedis{cache, ttl}
 }
 
-func (repo *CartRepositoryCacheRedis) Save(ctx context.Context, cart cart.Cart) (err error) {
+func (repo *CartRepositoryCacheRedis) Save(ctx context.Context, cart cart.Cart, cacheKey string) (err error) {
 
 	cacheData, err := json.Marshal(cart)
 
 	// save as string
-	stat := repo.cache.Set(ctx, cart.ID.String(), string(cacheData), repo.ttl)
+	stat := repo.cache.Set(ctx, cacheKey, string(cacheData), repo.ttl)
 
 	if stat.Err() != nil {
 		err = stat.Err()

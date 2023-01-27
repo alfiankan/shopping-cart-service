@@ -36,18 +36,18 @@ func TestCartRepoCahche(t *testing.T) {
 	}
 
 	t.Run("add item", func(t *testing.T) {
-		err := repo.Save(ctx, newCart)
+		err := repo.Save(ctx, newCart, "testing")
 		assert.NoError(t, err)
 	})
 
 	t.Run("get item", func(t *testing.T) {
-		_, err := repo.Get(ctx, newCart.ID.String())
+		_, err := repo.Get(ctx, "testing")
 		assert.NoError(t, err)
 	})
 
 	t.Run("invalidate item", func(t *testing.T) {
 
-		err := repo.InvalidateByCartID(ctx, newCart.ID.String())
+		err := repo.InvalidateByCartID(ctx, "testing")
 		assert.NoError(t, err)
 	})
 

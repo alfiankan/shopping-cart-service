@@ -121,7 +121,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "filter by kuantitas",
-                        "name": "juantitas",
+                        "name": "kuantitas",
                         "in": "query"
                     }
                 ],

@@ -33,13 +33,15 @@ func (uc *CartApplication) GetCarts(ctx context.Context) (carts []cart.Cart, err
 
 func (uc *CartApplication) GetCartItems(ctx context.Context, cartID uuid.UUID, filter cart.ItemFilter) (cart cart.Cart, err error) {
 
-	cart, err = uc.cacheRepo.Get(ctx, cartID.String())
+	cacheKey := fmt.Sprintf("%s#%s#%d", cartID, filter.Name, filter.Qty)
+
+	cart, err = uc.cacheRepo.Get(ctx, cacheKey)
 	if err != nil {
 		// get from persistence
 		cart, err = uc.persistRepo.GetItems(ctx, cartID, filter)
 
 		// save cache
-		if errCaching := uc.cacheRepo.Save(ctx, cart); errCaching != nil {
+		if errCaching := uc.cacheRepo.Save(ctx, cart, cacheKey); errCaching != nil {
 			common.Log(common.LOG_LEVEL_ERROR, errCaching.Error())
 		}
 	}

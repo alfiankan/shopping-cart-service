@@ -3,8 +3,10 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/alfiankan/haioo-shoping-cart/application/cart"
+	"github.com/alfiankan/haioo-shoping-cart/common"
 	"github.com/google/uuid"
 )
 
@@ -68,7 +70,6 @@ func (repo *CartRepositoryPostgree) GetCarts(ctx context.Context) (carts []cart.
 }
 func (repo *CartRepositoryPostgree) GetItems(ctx context.Context, cartID uuid.UUID, filter cart.ItemFilter) (res cart.Cart, err error) {
 
-	args := []any{}
 	sql := "SELECT * FROM cart_item"
 
 	if filter.Name != "" || filter.Qty != 0 {
@@ -76,16 +77,25 @@ func (repo *CartRepositoryPostgree) GetItems(ctx context.Context, cartID uuid.UU
 	}
 
 	if filter.Name != "" {
-		args = append(args, filter.Name)
-		sql += " product_name ILIKE %?% "
+		sql += " product_name ILIKE '%" + filter.Name + "%' "
 	}
 
-	if filter.Name != "" {
-		args = append(args, filter.Qty)
-		sql += " qty = %?% "
+	if filter.Name != "" && filter.Qty != 0 {
+		sql += " AND "
 	}
 
-	row, err := repo.db.QueryContext(ctx, sql, args...)
+	if filter.Qty != 0 {
+		sql += fmt.Sprintf(" qty = %d ", filter.Qty)
+	}
+
+	fmt.Println("QUERY", sql)
+
+	row, err := repo.db.QueryContext(ctx, sql)
+
+	if err != nil {
+		common.Log(common.LOG_LEVEL_ERROR, err.Error())
+		return
+	}
 
 	for row.Next() {
 
