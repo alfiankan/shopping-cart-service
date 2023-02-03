@@ -11,11 +11,10 @@ make test
 
 If you just want to run http test endpoint use this command :
 
-```
-
 ## How to run
 - first copy .env.example to .env
 - then run makefile script `make docker` then `make migrate` then `make run`
+
 ### Makefile script
 this project conatains Makefile :
 
