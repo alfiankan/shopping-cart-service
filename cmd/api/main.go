@@ -4,23 +4,25 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
-	"os"
-	"os/signal"
 	"time"
 
-	cartDeliveryHttp "github.com/alfiankan/haioo-shoping-cart/application/cart/delivery/http"
+	"github.com/alfiankan/haioo-shoping-cart/application/cart"
+	cartGrpcDelivery "github.com/alfiankan/haioo-shoping-cart/application/cart/delivery/rpc"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+
+	cart_grpc_generated "github.com/alfiankan/haioo-shoping-cart/application/cart/delivery/rpc/codegen"
 	cartRepositories "github.com/alfiankan/haioo-shoping-cart/application/cart/repositories"
 	cartUseCases "github.com/alfiankan/haioo-shoping-cart/application/cart/usecases"
 
-	middlewares "github.com/alfiankan/haioo-shoping-cart/common/middleware"
-	echoSwagger "github.com/swaggo/echo-swagger"
+	"google.golang.org/grpc"
 
 	"github.com/alfiankan/haioo-shoping-cart/common"
 	"github.com/alfiankan/haioo-shoping-cart/config"
 	"github.com/alfiankan/haioo-shoping-cart/infrastructure"
 	"github.com/go-redis/redis/v9"
-	"github.com/labstack/echo/v4"
 )
 
 // initInfrastructure init all infrastructure needs to run this application
@@ -36,7 +38,8 @@ func initInfrastructure(cfg config.ApplicationConfig) (pgConn *sql.DB, redisConn
 }
 
 // initArticleApplication init app by injecting deps
-func initArticleApplication(httpServer *echo.Echo, cfg config.ApplicationConfig) {
+func initArticleApplication(cfg config.ApplicationConfig) cart.ICartUseCase {
+	log.Println("cart application started")
 
 	pgConn, redisConn := initInfrastructure(cfg)
 
@@ -45,10 +48,18 @@ func initArticleApplication(httpServer *echo.Echo, cfg config.ApplicationConfig)
 	cartCacheRepo := cartRepositories.NewCartRepositoryCacheRedis(redisConn, 5*time.Minute)
 
 	// usecases
-	cartUseCases := cartUseCases.NewCartApplication(cartPersistRepo, cartCacheRepo)
+	return cartUseCases.NewCartApplication(cartPersistRepo, cartCacheRepo)
 
-	// handle http request response
-	cartDeliveryHttp.NewCartHttpApi(cartUseCases).HandleRoute(httpServer)
+}
+
+func InitgRPCServer(servers ...any) {
+
+	fmt.Println(servers...)
+}
+
+type GrpcServerHandler struct {
+	Registrar any
+	Srv       any
 }
 
 // @title haioo-shopping-cart-api
@@ -62,31 +73,40 @@ func initArticleApplication(httpServer *echo.Echo, cfg config.ApplicationConfig)
 func main() {
 
 	cfg := config.Load()
-	e := echo.New()
-	e.Use(middlewares.MiddlewaresRegistry...)
 
-	initArticleApplication(e, cfg)
+	cartApplication := initArticleApplication(cfg)
 
-	// swagger api docs
-	url := echoSwagger.URL(fmt.Sprintf("http://localhost:%s/docs/swagger.yaml", cfg.HTTPApiPort))
-	e.GET("/swagger/*", echoSwagger.EchoWrapHandler(url))
-	e.Static("/docs", "docs")
+	grpcServer := grpc.NewServer()
 
-	// Start server
+	cart_grpc_generated.RegisterCartServiceServer(grpcServer, cartGrpcDelivery.NewCartRpc(cartApplication))
+
+	listener, err := net.Listen("tcp", ":5300")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	go func() {
-		if err := e.Start(fmt.Sprintf(":%s", cfg.HTTPApiPort)); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server", err.Error())
+		mux := runtime.NewServeMux()
+		err := cart_grpc_generated.RegisterCartServiceHandlerFromEndpoint(context.Background(), mux, "localhost:5300", []grpc.DialOption{grpc.WithInsecure()})
+		if err != nil {
+			log.Fatal(err)
+		}
+		server := http.Server{
+			Handler: mux,
+		}
+		l, err := net.Listen("tcp", ":8081")
+		if err != nil {
+			log.Fatal(err)
+		}
+		// start server
+		err = server.Serve(l)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}()
-
-	// graceful shutdown
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 60 seconds.
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+	log.Println("gRPC server starting")
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatal(err)
 	}
+
 }

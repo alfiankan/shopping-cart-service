@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+option go_package = "./cart_grpc_generated";
+
+message EmptyRequest {
+
+}
+
+message EmptyDataResponse {
+    bool success = 1;
+    int32 code = 2;
+    string msg = 3;
+}
+
+service CartService {
+    rpc CreateCart(EmptyRequest) returns (EmptyDataResponse) {
+        option (google.api.http) = {
+            post: "/v1/cart"
+            body: "*"
+        };
+    };
+}

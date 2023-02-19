@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/alfian/cart
+deps:
+  - buf.build/googleapis/googleapis
